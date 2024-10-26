@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import fs from "fs";
-import { EventEmitter } from "stream";
 import { randomUUID } from "crypto";
 
 const PORT = 8080;
@@ -13,10 +12,6 @@ const r = express.Router()
 app.use(cors());
 app.use(express.json())
 app.use('/api', r);
-
-type state = "idle" | "watch";
-
-const event = new EventEmitter();
 
 class FunctionEvent {
     private callback: (
@@ -75,10 +70,15 @@ class FunctionEmitter {
 const fe = new FunctionEmitter();
 
 interface State { // VERY SAFE LOL XD
-    state: state,
+    state: "idle" | "watch",
     video: string | null,
     time: number,
     isPaused: boolean,
+}
+
+interface Track {
+    src: string,
+    type: "video" | "captions"
 }
 
 let state: State = {
@@ -98,6 +98,7 @@ r.get("/player", (req, res) => {
 
     if (time) {
         state["time"] = parseInt(time as string);
+        state["isPaused"] = true;
         fe.emit("update", "time")
         res.status(200).send("Time is updated");
         return;
@@ -118,7 +119,36 @@ r.get("/info", (req, res) => {
 })
 
 r.get("/videos", (req, res) => {
-    const videos = fs.readdirSync("./media");
+    let videos: Record<string, Array<Track>> = {};
+    
+    fs.readdirSync("./media").forEach((folder) => {
+        fs.readdirSync(`./media/${folder}`).forEach((file) => {
+
+            const [, ext] = file.split(".");
+            const fileDest = `${folder}/${file}`;
+            const vidExt = ["mp4", "webm"];
+            const capExt = ["vtt"];
+
+            if (!videos[folder])
+                videos[folder] = []
+
+            if (vidExt.includes(ext)) {
+                console.log("Add:" + file)
+
+                videos[folder].push({
+                    type: "video",
+                    src: fileDest
+                })
+            }
+
+            if (capExt.includes(ext)) {
+                videos[folder].push({
+                    type: "captions",
+                    src: fileDest
+                })
+            }
+        })
+    })
 
     res.status(200).send(videos);
 })
@@ -144,6 +174,8 @@ r.get("/set", (req, res) => {
     }
 
     state["video"] = video as string;
+    state["time"] = 0;
+    state["isPaused"] = true;
 
     fe.emit("update", "video")
 
@@ -231,14 +263,16 @@ r.post("/updates", async (req, res) => {
 r.get("/media", (req, res) => {
     const { video } = req.query;
 
-    const videos = fs.readdirSync("./media");
+    const uri = (__dirname + `/media/${video}`).replaceAll("/", "\\")
 
-    if (!videos.includes(video as string)) {
+    console.log(uri)
+
+    if (!fs.existsSync(uri)) {
         res.status(404).send("No a such video.")
         return;
     }
 
-    res.sendFile( __dirname + `/media/${video}`)
+    res.sendFile(uri)
 })
 
 app.listen(PORT, () => {
