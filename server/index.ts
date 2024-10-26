@@ -8,9 +8,11 @@ const PORT = 8080;
 // const HOST = "localhost";
 
 const app = express();
+const r = express.Router()
 
 app.use(cors());
 app.use(express.json())
+app.use('/api', r);
 
 type state = "idle" | "watch";
 
@@ -86,10 +88,15 @@ let state: State = {
     isPaused: true
 }
 
-app.get("/player", (req, res) => {
+r.get("/player", (req, res) => {
     const { time, pause } = req.query;
 
-    if (time && parseInt(time as string) !== state.time) {
+    if (parseInt(time as string) === state.time) {
+        res.sendStatus(208);
+        return;
+    }
+
+    if (time) {
         state["time"] = parseInt(time as string);
         fe.emit("update", "time")
         res.status(200).send("Time is updated");
@@ -106,17 +113,17 @@ app.get("/player", (req, res) => {
     res.status(400).send("No mama? (no player data)");
 })
 
-app.get("/info", (req, res) => {
+r.get("/info", (req, res) => {
     res.status(200).send(state);
 })
 
-app.get("/videos", (req, res) => {
+r.get("/videos", (req, res) => {
     const videos = fs.readdirSync("./media");
 
     res.status(200).send(videos);
 })
 
-app.get("/set", (req, res) => {
+r.get("/set", (req, res) => {
     const { sex, video } = req.query;
 
     if (sex) {
@@ -143,7 +150,7 @@ app.get("/set", (req, res) => {
     res.status(200).send("Video set succesfully");
 })
 
-app.get("/start", (req, res) => {
+r.get("/start", (req, res) => {
     if (state.state === "watch") {
         res.status(400).send("Session exists");
         return;
@@ -157,7 +164,7 @@ app.get("/start", (req, res) => {
     }
 })
 
-app.get("/end", (req, res) => {
+r.get("/end", (req, res) => {
     if (state.state === "watch") {
         state["state"] = "idle";
         fe.emit("update", "state");
@@ -171,7 +178,7 @@ app.get("/end", (req, res) => {
     }
 })
 
-app.post("/updates", async (req, res) => {
+r.post("/updates", async (req, res) => {
     const timestamp = Date.now();
     console.log(`| ${timestamp} listens`);
     
@@ -218,10 +225,10 @@ app.post("/updates", async (req, res) => {
         return;
     }
 
-    res.sendStatus(204);
+    res.status(204).send({})
 })
 
-app.get("/media", (req, res) => {
+r.get("/media", (req, res) => {
     const { video } = req.query;
 
     const videos = fs.readdirSync("./media");
