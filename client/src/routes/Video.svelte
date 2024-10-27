@@ -1,8 +1,8 @@
 <script lang="ts">
     interface VideoProps {
         videoUrl: string,
-        updatePause: (isPause: boolean) => {},
-        updateTime: (time: number) => {},
+        updatePause: (isPause: boolean) => Promise<any>,
+        updateTime: (time: number) => Promise<any>,
         time: number,
         isPause: boolean,
         captions: Array<string>
@@ -27,6 +27,15 @@
         isPause ? player.pause() : player.play()
     })
 
+    // FIXME: updatePause should work after update time
+    // But due to some bug, updatePause doesnt work if awaits
+    // So I keep it like this just, so there is bug with player
+
+    async function updatePauseTime(t: number, p: boolean) {
+        updateTime(t);
+        updatePause(p);
+    }
+
     let isSeeking = $state(false)
 </script>
 
@@ -35,8 +44,8 @@
     <video
         crossorigin="anonymous"
         bind:this={player}
-        onplay={() => updatePause(false)}
-        onpause={() => updatePause(true)}
+        onplay={async () => updatePauseTime(player.currentTime, false)}
+        onpause={async () => updatePauseTime(player.currentTime, true)}
         ontimeupdate={() => isSeeking && isPause ? updateTime(player.currentTime) : null}
         src={videoUrl}
         onseeking={() => isSeeking = true}

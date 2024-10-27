@@ -59,7 +59,6 @@ class FunctionEmitter {
     }
 
     emit(state: keyof FunctionEmitterFunctions, data: any) {
-        console.log(this.functions);
         this.functions[state].forEach(async (v, i) => {
             v.f.apply(data);
             this.functions[state] = this.functions[state].filter((_v, _i) => _v.id !== v.id)
@@ -98,7 +97,6 @@ r.get("/player", (req, res) => {
 
     if (time) {
         state["time"] = parseInt(time as string);
-        state["isPaused"] = true;
         fe.emit("update", "time")
         res.status(200).send("Time is updated");
         return;
@@ -133,8 +131,6 @@ r.get("/videos", (req, res) => {
                 videos[folder] = []
 
             if (vidExt.includes(ext)) {
-                console.log("Add:" + file)
-
                 videos[folder].push({
                     type: "video",
                     src: fileDest
@@ -154,12 +150,7 @@ r.get("/videos", (req, res) => {
 })
 
 r.get("/set", (req, res) => {
-    const { sex, video } = req.query;
-
-    if (sex) {
-        res.status(400).send("Sex is bad. Kill sex. NOW.");
-        return;
-    }
+    const { video } = req.query;
 
     if (!video) {
         res.status(400).send("No video?");
@@ -211,9 +202,6 @@ r.get("/end", (req, res) => {
 })
 
 r.post("/updates", async (req, res) => {
-    const timestamp = Date.now();
-    console.log(`| ${timestamp} listens`);
-    
     const userState = req.body;
 
     if (!userState) {
@@ -224,7 +212,6 @@ r.post("/updates", async (req, res) => {
     if (
         JSON.stringify(userState) !== JSON.stringify(state)
     ) {
-        console.log(`| ${timestamp} isnt same`);
         await new Promise((resolve) => {
             setTimeout(() => resolve("SOSICHUNCOIJAHJF"), 500);
         })
@@ -249,10 +236,7 @@ r.post("/updates", async (req, res) => {
         }, 60000);
     })
 
-    console.log(`| ${timestamp} ends`);
-
     if (update) {
-        console.log("Update sent")
         res.status(200).send(update)
         return;
     }
@@ -265,8 +249,6 @@ r.get("/media", (req, res) => {
 
     const uri = (__dirname + `/media/${video}`).replaceAll("/", "\\")
 
-    console.log(uri)
-
     if (!fs.existsSync(uri)) {
         res.status(404).send("No a such video.")
         return;
@@ -276,5 +258,6 @@ r.get("/media", (req, res) => {
 })
 
 app.listen(PORT, () => {
-    console.log("Server has been started");
+    const date = new Date().toLocaleString();
+    console.log(`Server has started (${date})`);
 })

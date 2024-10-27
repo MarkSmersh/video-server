@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
 	import Video from './Video.svelte';
-	import { fade, slide } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 
     let url = "http://localhost:8080/api/";
 
@@ -86,13 +86,13 @@
     <!-- <button onclick={() => info()}>magic</button> -->
 
     {#if s.state === "watch"}
-        <div class="player-wrapper" transition:fade>
+        <div class="player-wrapper" transition:scale>
             {#if s.video !== null}
                 <Video 
                     time={s.time}
                     isPause={s.isPaused}
-                    updatePause={(p) => req("player?pause=" + p)}
-                    updateTime={async (t) => {await req("player?time=" + t)}}
+                    updatePause={async (p) => await req("player?pause=" + p)}
+                    updateTime={async (t) => await req("player?time=" + t)}
                     videoUrl={url + "media?video=" + vs[s.video].find((f) => f.type === "video")?.src}
                     captions={
                         vs[s.video].map((f) => f.type === "captions" ? url + "media?video=" + f.src : "")
@@ -140,6 +140,7 @@
         align-items: center;
         padding: 16px;
         gap: 16px;
+        max-height: 50%;
     }
 
     .chapters {
@@ -147,6 +148,8 @@
         flex-direction: column;
         gap: 8px;
         width: 50%;
+        max-height: 100%;
+        overflow-y: scroll;
     }
 
     .main {
@@ -169,6 +172,7 @@
         text-overflow: ellipsis;
         text-wrap: nowrap;
         overflow: hidden;
+        min-height: fit-content;
     }
 
     @media only screen and (max-width: 600px) {
