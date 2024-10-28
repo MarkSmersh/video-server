@@ -22,6 +22,7 @@
     $effect(() => {
         const timeDiff = player.currentTime - time
         if (timeDiff > 2 || timeDiff < -2) // change the numbers depend on what do you prefer more: less - more sync, more - more smooth
+            console.log("if it works")
             player.currentTime = time
 
         isPause ? player.pause() : player.play()
@@ -32,11 +33,13 @@
     // So I keep it like this just, so there is bug with player
 
     async function updatePauseTime(t: number, p: boolean) {
-        updateTime(t);
+        await updateTime(t);
         updatePause(p);
     }
 
     let isSeeking = $state(false)
+
+    $inspect(time)
 </script>
 
 <div class="video-wrapper">

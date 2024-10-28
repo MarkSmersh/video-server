@@ -3,6 +3,8 @@ import cors from "cors";
 import fs from "fs";
 import { randomUUID } from "crypto";
 
+import {  } from "express";
+
 const PORT = 8080;
 // const HOST = "localhost";
 
@@ -112,8 +114,14 @@ r.get("/player", (req, res) => {
     res.status(400).send("No mama? (no player data)");
 })
 
+// r.get("/info", (req, res) => {
+//     console.log(res)
+//     res.status(200).send(state);
+// })
+
 r.get("/info", (req, res) => {
-    res.status(200).send(state);
+    console.log(res)
+    res.sendFile(__dirname + "/media/Some gachi/gachi.mp4");
 })
 
 r.get("/videos", (req, res) => {

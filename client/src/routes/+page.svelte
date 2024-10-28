@@ -3,7 +3,7 @@
 	import Video from './Video.svelte';
 	import { fade, scale } from 'svelte/transition';
 
-    let url = "http://localhost:8080/api/";
+    let url = "/api/";
 
     interface State { // VERY SAFE LOL XD
         state: "idle" | "watch",
@@ -93,9 +93,9 @@
                     isPause={s.isPaused}
                     updatePause={async (p) => await req("player?pause=" + p)}
                     updateTime={async (t) => await req("player?time=" + t)}
-                    videoUrl={url + "media?video=" + vs[s.video].find((f) => f.type === "video")?.src}
+                    videoUrl={url + `med?file=` + vs[s.video].find((f) => f.type === "video")?.src}
                     captions={
-                        vs[s.video].map((f) => f.type === "captions" ? url + "media?video=" + f.src : "")
+                        vs[s.video].map((f) => f.type === "captions" ? url + "med?file=" + f.src : "")
                     }
                 />
             {:else}
