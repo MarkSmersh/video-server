@@ -38,7 +38,9 @@
             body: body ? JSON.stringify(body) : null
         })
 
-        const contentType = res.headers.get("content-type")
+        type ContentType = "text/plain;charset=UTF-8" | "application/json" | null;
+
+        const contentType: ContentType = res.headers.get("content-type") as any
 
         let data: any;
 
@@ -49,14 +51,14 @@
         else
             data = "";
 
-        return { status: res.status, data: data }
+        return { status: res.status, contentType: contentType, data: data }
     }
 
     async function updates() {
         try {
-            let { status, data } = await req("updates", "POST", s);
+            let { status, data, contentType } = await req("updates", "POST", s);
 
-            if (status === 200) {
+            if (status === 200 && contentType === "application/json") {
                 let newUpdate: { "state": State, "update": string } = data;
                 vs = (await req("videos")).data
 

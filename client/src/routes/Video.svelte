@@ -22,7 +22,6 @@
     $effect(() => {
         const timeDiff = player.currentTime - time
         if (timeDiff > 2 || timeDiff < -2) // change the numbers depend on what do you prefer more: less - more sync, more - more smooth
-            console.log("if it works")
             player.currentTime = time
 
         isPause ? player.pause() : player.play()

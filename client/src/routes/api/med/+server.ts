@@ -9,9 +9,6 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
     const [start, rangeEnd] = range ? range.replace("bytes=", "").split("-").map((v) => parseInt(v, 10)) as number[] : [0,0]
 
-    console.log(range)
-    console.log(`START: ${start}, END: ${rangeEnd}`)
-
     if (!file)
         return new Response("No file?", { status: 400 });
 

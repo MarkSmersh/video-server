@@ -1,10 +1,8 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 import { state, fe } from "$lib/server";
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }) => {    
     const userState = await request.json();
-
-    console.log(userState);
 
     if (!userState) 
         return new Response("Unless laggy", { status: 200 })
@@ -28,7 +26,7 @@ export const POST: RequestHandler = async ({ request }) => {
         setTimeout(() => {
             fe.remove(f_info.state, f_info.id)
             resolve(undefined)
-        }, 60000);
+        }, 5000);
     })
 
     if (update)
