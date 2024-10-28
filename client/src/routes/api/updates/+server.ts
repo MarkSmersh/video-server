@@ -4,13 +4,16 @@ import { state, fe } from "$lib/server";
 export const POST: RequestHandler = async ({ request }) => {
     const userState = await request.json();
 
+    console.log(userState);
+
     if (!userState) 
         return new Response("Unless laggy", { status: 200 })
 
     if (JSON.stringify(userState) !== JSON.stringify(state)) {
-        // await new Promise((resolve) => {
-        //     setTimeout(() => resolve("SOSICHUNCOIJAHJF"), 500);
-        // })
+        // FIXME: REMOVE THIS AND YOU WILL GOT A MACHINGE GUN SIMULATOR
+        await new Promise((resolve) => {
+            setTimeout(() => resolve(undefined), 500);
+        })
         return json({ "update": "state", "state": state });
     }
 

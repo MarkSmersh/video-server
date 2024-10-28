@@ -38,7 +38,16 @@
             body: body ? JSON.stringify(body) : null
         })
 
-        let data = await res.json()
+        const contentType = res.headers.get("content-type")
+
+        let data: any;
+
+        if (contentType === "text/plain;charset=UTF-8")
+            data = res.text;
+        else if (contentType === "application/json")
+            data = await res.json();
+        else
+            data = "";
 
         return { status: res.status, data: data }
     }

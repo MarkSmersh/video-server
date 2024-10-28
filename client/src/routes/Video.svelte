@@ -34,7 +34,7 @@
 
     async function updatePauseTime(t: number, p: boolean) {
         await updateTime(t);
-        updatePause(p);
+        await updatePause(p);
     }
 
     let isSeeking = $state(false)
