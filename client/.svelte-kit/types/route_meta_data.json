@@ -1,0 +1,30 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/api/end": [
+		"src/routes/api/end/+server.ts"
+	],
+	"/api/info": [
+		"src/routes/api/info/+server.ts"
+	],
+	"/api/med": [
+		"src/routes/api/med/+server.ts"
+	],
+	"/api/player": [
+		"src/routes/api/player/+server.ts"
+	],
+	"/api/set": [
+		"src/routes/api/set/+server.ts"
+	],
+	"/api/start": [
+		"src/routes/api/start/+server.ts"
+	],
+	"/api/updates": [
+		"src/routes/api/updates/+server.ts"
+	],
+	"/api/videos": [
+		"src/routes/api/videos/+server.ts"
+	]
+}
