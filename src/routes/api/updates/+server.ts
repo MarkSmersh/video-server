@@ -1,30 +1,45 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { state, fe } from "$lib/server";
+import { state, ee } from "$lib/server";
 
-export const POST: RequestHandler = async ({ request }) => {    
-    const userState = await request.json();
+export const POST: RequestHandler = async ({ request, cookies }) => {
+    let session = cookies.get("session");
 
-    if (!userState) 
-        return new Response("Unless laggy", { status: 200 })
+    if (!session) {
+        cookies.set("session", crypto.randomUUID(), { path: "/" });
+        session = cookies.get("session");
+    }
+
+    if (!session) {
+        return new Response("Bebra", { status: 500 });
+    }
+    
+    const userState = (await request.json());
+    
+    if (!userState) {
+        await new Promise((resolve) => {
+            setTimeout(() => resolve(undefined), 500);
+        })
+        return new Response("No user state", { status: 400 })
+    }
 
     if (JSON.stringify(userState) !== JSON.stringify(state)) {
         // FIXME: REMOVE THIS AND YOU WILL GOT A MACHINGE GUN SIMULATOR
         await new Promise((resolve) => {
             setTimeout(() => resolve(undefined), 500);
         })
-        return json({ "update": "state", "state": state });
+        return json(state);
     }
 
-    const update = await new Promise((resolve, reject) => {
-        const f_info = fe.add(
-            "update", 
-            async (s) => {
-                resolve({ "update": s, "state": state })
+    const update = await new Promise((resolve) => {
+        ee.add(
+            session, 
+            async () => {
+                resolve(state)
             }
         )
 
         setTimeout(() => {
-            fe.remove(f_info.state, f_info.id)
+            ee.remove(session)
             resolve(undefined)
         }, 5000);
     })
@@ -32,5 +47,5 @@ export const POST: RequestHandler = async ({ request }) => {
     if (update)
         return json(update)
 
-    return new Response("");
+    return new Response();
 }

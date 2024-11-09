@@ -2,90 +2,35 @@
     import { onMount } from 'svelte';
 	import Video from './Video.svelte';
 	import { fade, scale } from 'svelte/transition';
+	import { req, Updates, type State, type VideoSub } from '$lib';
 
-    let url = "/api/";
+    let vs: VideoSub = $state({});
 
-    interface State { // VERY SAFE LOL XD
-        state: "idle" | "watch",
-        video: string | null,
-        time: number,
-        isPaused: boolean,
-    }
-    
-    let s: State = $state({
+    let s: State | null = $state(null)
+
+    let updates = new Updates(onUpdate, {
         state: "idle",
         video: null,
         time: 0,
-        isPaused: false,
+        isPaused: false
     });
-
-    let vs: Record<string, Array<{
-        src: string,
-        type: "video" | "captions"
-    }>> = $state({});
-
-    async function req(
-        route: string,
-        method: string = "GET",
-        body: Record<string, any> | null = null
-    ) {
-        let res = await fetch(url + route, {
-            method: method,
-            headers: body ? {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            } : {},
-            body: body ? JSON.stringify(body) : null
-        })
-
-        type ContentType = "text/plain;charset=UTF-8" | "application/json" | null;
-
-        const contentType: ContentType = res.headers.get("content-type") as any
-
-        let data: any;
-
-        if (contentType === "text/plain;charset=UTF-8")
-            data = res.text;
-        else if (contentType === "application/json")
-            data = await res.json();
-        else
-            data = "";
-
-        return { status: res.status, contentType: contentType, data: data }
+    
+    function onUpdate(update: State) {
+        s = update;
     }
 
-    async function updates() {
-        try {
-            let { status, data, contentType } = await req("updates", "POST", s);
-
-            if (status === 200 && contentType === "application/json") {
-                let newUpdate: { "state": State, "update": string } = data;
-                vs = (await req("videos")).data
-
-                s = newUpdate.state;
-            }
-        } catch (e) {
-            console.log(e);
-            await new Promise((resolve) => {
-                setTimeout(() => resolve(null), 5000);
-            })
-        }
-
-        await updates();
+    async function info() {
+        s = (await req("info")).data as State;
     }
 
-    async function info () {
-        s = (await req("info")).data;
-    }
-
-    async function videos () {
-        vs = (await req("videos")).data
+    async function videos() {
+        vs = (await req("videos")).data as VideoSub;
     }
 
     onMount(async () => {
         await videos();
         await info();
-        await updates();
+        updates.listen();
     })
 
     $inspect(s, vs);
@@ -95,8 +40,7 @@
 <div class="root">
     <h1>Video Player Server</h1>
     <!-- <button onclick={() => info()}>magic</button> -->
-
-    {#if s.state === "watch"}
+    {#if s !== null && s.state === "watch"}
         <div class="player-wrapper" transition:scale>
             {#if s.video !== null}
                 <Video 
@@ -104,9 +48,9 @@
                     isPause={s.isPaused}
                     updatePause={async (p) => await req("player?pause=" + p)}
                     updateTime={async (t) => await req("player?time=" + t)}
-                    videoUrl={url + `med?file=` + vs[s.video].find((f) => f.type === "video")?.src}
+                    videoUrl={`/api/med?file=` + vs[s.video].find((f) => f.type === "video")?.src}
                     captions={
-                        vs[s.video].map((f) => f.type === "captions" ? url + "med?file=" + f.src : "")
+                        vs[s.video].map((f) => f.type === "captions" ? "/api/med?file=" + f.src : "")
                     }
                 />
             {:else}

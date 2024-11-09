@@ -1,4 +1,4 @@
-import { json, type RequestHandler } from "@sveltejs/kit";
+import { type RequestHandler } from "@sveltejs/kit";
 import { state } from "$lib/server";
 
 export const GET: RequestHandler = ({ url }) => {    
@@ -8,8 +8,8 @@ export const GET: RequestHandler = ({ url }) => {
     if (parseInt(time as string) === state.get().time) {
         return new Response("Time is already same", { status: 208 });
     }
-    // TODO: Check is good
 
+    // TODO: Check is good
 
     if (time) {
         state.setTime(parseInt(time as string));

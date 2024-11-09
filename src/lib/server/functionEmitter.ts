@@ -1,57 +1,58 @@
-interface Track {
-    src: string,
-    type: "video" | "captions"
-}
-
-class FunctionEvent {
+class EventCallback {
     private callback: (
-        data: any
+        data: unknown
     ) => Promise<void>
 
     constructor(
         callback: (
-            data: any
+            data: unknown
         ) => Promise<void>
     ) {
         this.callback = callback;
     }
 
-    async apply(data: any) {
+    async apply(data: unknown) {
         await this.callback(
             data
         );
     }
 }
 
-interface FunctionEmitterFunctions {
-    update: {
-        id: string,
-        f: FunctionEvent
-    }[]
-}
+type EventEmitterFunctions = Array<{session: string, callback: EventCallback}>;
 
-export class FunctionEmitter {
-    private functions: FunctionEmitterFunctions = {
-        update: [],
-    }
+export class EventEmitter {
+    private functions: EventEmitterFunctions = []
 
-    add(state: keyof FunctionEmitterFunctions, func: (data: any) => Promise<void>) {
-        const id = crypto.randomUUID();
-        this.functions[state].push({
-            id: id,
-            f: new FunctionEvent(func)
+    add(session: string, callback: (data: unknown) => Promise<void>) {
+        // removes unnecessary updates got from session
+        // dont need in production, unless someone
+        // trying to break sth
+        
+        if (this.functions.find((f) => f.session)) {
+            this.remove(session);
+        }
+
+        this.functions.push({
+            session: session,
+            callback: new EventCallback(callback)
         });
-        return { state: state, id: id };
+        return session;
     }
 
-    remove(state: keyof FunctionEmitterFunctions, id: string) {
-        this.functions[state] = this.functions[state].filter((_v, _i) => _v.id !== id)
+    remove(session: string) {
+        this.functions = this.functions.filter((f) => f.session !== session)
     }
 
-    emit(state: keyof FunctionEmitterFunctions, data: any) {
-        this.functions[state].forEach(async (v, i) => {
-            v.f.apply(data);
-            this.functions[state] = this.functions[state].filter((_v, _i) => _v.id !== v.id)
+    // session here is the client, that sent update, so we
+    // do not want to update it, unless we want to cause
+    // unnecessary update
+
+    emit(session: string, data: unknown) {
+        this.functions.forEach(async (f) => {
+            if (f.session !== session) {
+                f.callback.apply(data); 
+            }
+            this.remove(session);
         })
     }
 }

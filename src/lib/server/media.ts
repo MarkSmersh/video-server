@@ -4,8 +4,6 @@ export function getMediaDir() {
     return fs.readdirSync(import.meta.dirname + "/media/");
 }
 
-// Godlike
-
 export async function getMediaFile(file: string, start: number = 0) {
     const fileDir = import.meta.dirname + `/media/${file}`;
 
@@ -24,7 +22,7 @@ export async function getMediaFile(file: string, start: number = 0) {
 }
 
 export function readMedia() {
-    let videos: Record<string, Array<Track>> = {};
+    const videos: Record<string, Array<Track>> = {};
 
     const mediaDir = import.meta.dirname + "/media/"
 
@@ -33,7 +31,7 @@ export function readMedia() {
 
             const [, ext] = file.split(".");
             const fileDest = `${folder}/${file}`;
-            const vidExt = ["mp4", "webm"];
+            const vidExt = ["mp4"];
             const capExt = ["vtt"];
 
             if (!videos[folder])

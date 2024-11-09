@@ -1,4 +1,13 @@
 <script lang="ts">
+    import Plyr from "plyr";
+	import { onMount } from "svelte";
+
+    onMount(() => {
+        player = new Plyr("#player");
+    })
+
+    let player: Plyr = $state() as Plyr;
+
     interface VideoProps {
         videoUrl: string,
         updatePause: (isPause: boolean) => Promise<any>,
@@ -17,7 +26,7 @@
         captions
     }: VideoProps = $props();
 
-    let player = $state() as HTMLVideoElement;
+    // let player = $state() as HTMLVideoElement;
 
     $effect(() => {
         const timeDiff = player.currentTime - time
@@ -36,7 +45,7 @@
         await updatePause(p);
     }
 
-    let isSeeking = $state(false)
+    let isSeeking = $state(false);
 
     $inspect(time)
 </script>
@@ -44,8 +53,9 @@
 <div class="video-wrapper">
     <!-- svelte-ignore a11y_media_has_caption -->
     <video
+        id="player"
+        playsinline
         crossorigin="anonymous"
-        bind:this={player}
         onplay={async () => updatePauseTime(player.currentTime, false)}
         onpause={async () => updatePauseTime(player.currentTime, true)}
         ontimeupdate={() => isSeeking && isPause ? updateTime(player.currentTime) : null}
@@ -67,10 +77,11 @@
     .video-wrapper {
         /* background-color: blueviolet; */
         border-radius: 16px;
+        overflow: hidden;
     }
 
-    video {
-        border-radius: 16px;
+    #player {
+        overflow: hidden;
         box-shadow: 1px;
         width: 100%;
         max-height: 50vh;
