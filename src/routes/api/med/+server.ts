@@ -1,8 +1,6 @@
 import { type RequestHandler } from "@sveltejs/kit";
 import { getMediaFile } from "$lib/server";
 
-// Godlike
-
 export const GET: RequestHandler = async ({ url, request }) => {
     const file = url.searchParams.get("file");
     const range = request.headers.get("range");

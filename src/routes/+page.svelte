@@ -2,21 +2,30 @@
     import { onMount } from 'svelte';
 	import Video from './Video.svelte';
 	import { fade, scale } from 'svelte/transition';
-	import { req, Updates, type State, type VideoSub } from '$lib';
+	import { req, update, type State, type VideoSub } from '$lib';
 
     let vs: VideoSub = $state({});
 
     let s: State | null = $state(null)
 
-    let updates = new Updates(onUpdate, {
-        state: "idle",
-        video: null,
-        time: 0,
-        isPaused: false
-    });
+    let videoUrl = $derived.by(() => {
+        if (s && s.video) {
+            return "/api/med?file=" + vs[s.video].find((f) => f.type === "video")?.src;
+        }
+        return null;
+    })
+
+    let captions = $derived.by(() => {
+        if (s && s.video) {
+            let captions = vs[s.video].map((f) => f.type === "captions" ? "/api/med?file=" + f.src : "");
+            captions = captions.filter((c) => c !== "");
+            return captions;
+        }
+        return null;
+    })
     
-    function onUpdate(update: State) {
-        s = update;
+    function onUpdate(newState: State) {
+        s = newState;
     }
 
     async function info() {
@@ -30,11 +39,13 @@
     onMount(async () => {
         await videos();
         await info();
-        updates.listen();
+        console.log("---start---");
+        console.log(s);
+        console.log("---end---");
+        update(s as State, onUpdate);
     })
 
-    $inspect(s, vs);
-    
+    // $inspect(s, vs);
 </script>
 
 <div class="root">
@@ -48,10 +59,8 @@
                     isPause={s.isPaused}
                     updatePause={async (p) => await req("player?pause=" + p)}
                     updateTime={async (t) => await req("player?time=" + t)}
-                    videoUrl={`/api/med?file=` + vs[s.video].find((f) => f.type === "video")?.src}
-                    captions={
-                        vs[s.video].map((f) => f.type === "captions" ? "/api/med?file=" + f.src : "")
-                    }
+                    videoUrl={videoUrl}
+                    captions={captions}
                 />
             {:else}
                 No video?
@@ -83,6 +92,28 @@
         font-weight: 400;
         font-style: normal;
         gap: 24px;
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+        width: 8px;
+        border-radius: 8px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 8px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 
     .player-wrapper {

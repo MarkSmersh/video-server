@@ -6,7 +6,7 @@ export {
 
 export {
     type State,
-    Updates
+    update
 } from "./updates";
 
 export type VideoSub = Record<string, Array<{

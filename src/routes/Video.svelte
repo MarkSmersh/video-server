@@ -9,12 +9,12 @@
     let player: Plyr = $state() as Plyr;
 
     interface VideoProps {
-        videoUrl: string,
+        videoUrl: string | null,
         updatePause: (isPause: boolean) => Promise<any>,
         updateTime: (time: number) => Promise<any>,
         time: number,
         isPause: boolean,
-        captions: Array<string>
+        captions: Array<string> | null
     }
 
     let {
@@ -26,11 +26,12 @@
         captions
     }: VideoProps = $props();
 
-    // let player = $state() as HTMLVideoElement;
-
     $effect(() => {
+        // TODO: Captions are not visible when switching
+        // video url, seems it need to be reload manually 
+
         const timeDiff = player.currentTime - time
-        if (timeDiff > 2 || timeDiff < -2) // change the numbers depend on what do you prefer more: less - more sync, more - more smooth
+        if (timeDiff > 1 || timeDiff < -1) // change the numbers depend on what do you prefer more: less - more sync, more - more smooth
             player.currentTime = time
 
         isPause ? player.pause() : player.play()
@@ -47,7 +48,7 @@
 
     let isSeeking = $state(false);
 
-    $inspect(time)
+    // $inspect(time)
 </script>
 
 <div class="video-wrapper">
@@ -63,27 +64,30 @@
         onseeking={() => isSeeking = true}
         onseeked={() => isSeeking = false}
         controls
-        >
+    >
         <!-- <source src={videoUrl} type="video/mp4"> -->
-        {#each captions as c}
-            {#if c !== ""}
+        {#if captions}
+            {#each captions as c}
                 <track kind="captions" src={c}>
-            {/if}
-        {/each}
+            {/each}
+        {/if}
     </video>
 </div>
 
-<style scoped>
+<style>
     .video-wrapper {
         /* background-color: blueviolet; */
         border-radius: 16px;
         overflow: hidden;
+        height: 100%;
+        --plyr-color-main: violet;
     }
 
     #player {
         overflow: hidden;
         box-shadow: 1px;
         width: 100%;
-        max-height: 50vh;
+        /* max-height: 50vh; */
+        color: brown;
     }
 </style>

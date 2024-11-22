@@ -5,15 +5,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     let session = cookies.get("session");
 
     if (!session) {
-        cookies.set("session", crypto.randomUUID(), { path: "/" });
         session = cookies.get("session");
-    }
-
-    if (!session) {
-        return new Response("Bebra", { status: 500 });
+        return new Response("No session", { status: 400 });
     }
     
     const userState = (await request.json());
+    console.log(userState);
     
     if (!userState) {
         await new Promise((resolve) => {
@@ -31,7 +28,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     }
 
     const update = await new Promise((resolve) => {
-        ee.add(
+        const uuid = ee.add(
             session, 
             async () => {
                 resolve(state)
@@ -39,9 +36,9 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         )
 
         setTimeout(() => {
-            ee.remove(session)
-            resolve(undefined)
-        }, 5000);
+            ee.remove(session, uuid);
+            resolve(undefined);
+        }, 60000);
     })
 
     if (update)

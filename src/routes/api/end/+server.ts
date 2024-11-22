@@ -1,13 +1,19 @@
 import { type RequestHandler } from "@sveltejs/kit";
 import { state } from "$lib/server";
 
-export const GET: RequestHandler = ({ url }) => {
+export const GET: RequestHandler = ({ cookies }) => {
+    const session = cookies.get("session");
+
+    if (!session) {
+        return new Response("No session", { status: 400 });
+    }
+
     if (state.get().state === "idle") {
         return new Response("Session not exists", { status: 400 });
     }
 
     if (state.get().state === "watch") {
-        state.setState("idle");
+        state.setState("idle", session);
         return new Response("Session ended")
     };
 

@@ -6,24 +6,28 @@ export class State {
     private time: number = 0;
     private isPaused: boolean = false;
 
-    setState(s: "idle" | "watch") {
+    constructor() {
+        this.counter();
+    }
+
+    setState(s: "idle" | "watch", session: string) {
         this.state = s;
-        ee.emit("update", "state");
+        ee.emit(session, "state");
     }
 
-    setVideo(v: string | null) {
+    setVideo(v: string | null, session: string) {
         this.video = v;
-        ee.emit("update", "video");
+        ee.emit(session, "video");
     }
 
-    setTime(t: number) {
+    setTime(t: number, session: string) {
         this.time = t;
-        ee.emit("update", "time");
+        ee.emit(session, "time");
     }
 
-    setPause(isPaused: boolean) {
+    setPause(isPaused: boolean, session: string) {
         this.isPaused = isPaused;
-        ee.emit("update", "pause");
+        ee.emit(session, "pause");
     }
 
     get() {
@@ -33,5 +37,17 @@ export class State {
             time: this.time,
             isPaused: this.isPaused
         }
+    }
+
+    private async counter() {
+        await new Promise((resolve) => {
+            setTimeout(() => resolve(null), 1000);
+        })
+
+        if (!this.isPaused) {
+            this.time += 1;
+        }
+
+        await this.counter();
     }
 }

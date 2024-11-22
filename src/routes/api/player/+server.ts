@@ -1,7 +1,13 @@
 import { type RequestHandler } from "@sveltejs/kit";
 import { state } from "$lib/server";
 
-export const GET: RequestHandler = ({ url }) => {    
+export const GET: RequestHandler = ({ url, cookies }) => {
+    const session = cookies.get("session");
+
+    if (!session) {
+        return new Response("No session", { status: 400 });
+    }
+
     const time = url.searchParams.get("time");
     const pause = url.searchParams.get("pause")
     
@@ -12,7 +18,7 @@ export const GET: RequestHandler = ({ url }) => {
     // TODO: Check is good
 
     if (time) {
-        state.setTime(parseInt(time as string));
+        state.setTime(parseInt(time as string), session);
         return new Response("Time is updated", { status: 200 });
     }
 
@@ -23,7 +29,7 @@ export const GET: RequestHandler = ({ url }) => {
             return new Response("", { status: 208 });
         }
 
-        state.setPause(pauseBool);
+        state.setPause(pauseBool, session);
         return new Response("Pause is updated", { status: 200 });
     }
 

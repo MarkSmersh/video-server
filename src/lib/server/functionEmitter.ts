@@ -18,29 +18,44 @@ class EventCallback {
     }
 }
 
-type EventEmitterFunctions = Array<{session: string, callback: EventCallback}>;
+type EventEmitterFunctions = {
+    [x: string]: Array<{
+        uuid: string,
+        callback: EventCallback
+    }>
+}
 
 export class EventEmitter {
-    private functions: EventEmitterFunctions = []
+    private functions: EventEmitterFunctions = {}
 
     add(session: string, callback: (data: unknown) => Promise<void>) {
         // removes unnecessary updates got from session
         // dont need in production, unless someone
         // trying to break sth
         
-        if (this.functions.find((f) => f.session)) {
-            this.remove(session);
+        // if (this.functions.find((f) => f.session)) {
+        //     this.remove(session);
+        // }
+
+        if (!this.functions[session]) {
+            this.functions[session] = [];
         }
 
-        this.functions.push({
-            session: session,
+        const uuid = crypto.randomUUID();
+
+        this.functions[session].push({
+            uuid: uuid,
             callback: new EventCallback(callback)
         });
-        return session;
+        return uuid;
     }
 
-    remove(session: string) {
-        this.functions = this.functions.filter((f) => f.session !== session)
+    remove(session: string, uuid: string) {
+        this.functions[session] = this.functions[session].filter((f) => f.uuid !== uuid)
+    }
+
+    removeAll(session: string) {
+        this.functions[session] = [];
     }
 
     // session here is the client, that sent update, so we
@@ -48,11 +63,10 @@ export class EventEmitter {
     // unnecessary update
 
     emit(session: string, data: unknown) {
-        this.functions.forEach(async (f) => {
-            if (f.session !== session) {
-                f.callback.apply(data); 
-            }
-            this.remove(session);
+        Object.keys(this.functions).forEach((s) => {
+            console.log(s);
+            this.functions[s].forEach((f) => f.callback.apply(data));
+            this.removeAll(s);
         })
     }
 }
