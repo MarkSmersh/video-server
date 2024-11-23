@@ -2,25 +2,21 @@
     import Plyr from "plyr";
 	import { onMount } from "svelte";
 
-    onMount(() => {
-        player = new Plyr("#player");
-    })
-
-    let player: Plyr = $state() as Plyr;
+    let player = $state<HTMLVideoElement>() as HTMLVideoElement;
 
     interface VideoProps {
-        videoUrl: string | null,
+        videos: Array<string>,
         updatePause: (isPause: boolean) => Promise<any>,
         updateTime: (time: number) => Promise<any>,
         time: number,
         isPause: boolean,
-        captions: Array<string> | null
+        captions: Array<string>
     }
 
     let {
         updatePause,
         updateTime,
-        videoUrl,
+        videos,
         time,
         isPause,
         captions
@@ -28,13 +24,15 @@
 
     $effect(() => {
         // TODO: Captions are not visible when switching
-        // video url, seems it need to be reload manually 
+        // video url, seems it need to be reload manually
 
         const timeDiff = player.currentTime - time
         if (timeDiff > 1 || timeDiff < -1) // change the numbers depend on what do you prefer more: less - more sync, more - more smooth
             player.currentTime = time
 
-        isPause ? player.pause() : player.play()
+        if (player.paused !== isPause) {
+            isPause ? player.pause() : player.play()
+        }
     })
 
     // FIXME: updatePause should work after update time
@@ -55,22 +53,24 @@
     <!-- svelte-ignore a11y_media_has_caption -->
     <video
         id="player"
+        bind:this={player}
         playsinline
         crossorigin="anonymous"
         onplay={async () => updatePauseTime(player.currentTime, false)}
         onpause={async () => updatePauseTime(player.currentTime, true)}
         ontimeupdate={() => isSeeking && isPause ? updateTime(player.currentTime) : null}
-        src={videoUrl}
         onseeking={() => isSeeking = true}
         onseeked={() => isSeeking = false}
         controls
+        src={videos[0]}
+        
     >
-        <!-- <source src={videoUrl} type="video/mp4"> -->
-        {#if captions}
-            {#each captions as c}
-                <track kind="captions" src={c}>
-            {/each}
-        {/if}
+    {#each videos as v}
+        <source src={v} type="video/mp4">
+    {/each}
+    {#each captions as c}
+        <track kind="captions" src={c}>
+    {/each}
     </video>
 </div>
 

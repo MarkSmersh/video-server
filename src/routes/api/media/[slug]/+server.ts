@@ -1,8 +1,11 @@
-import { type RequestHandler } from "@sveltejs/kit";
 import { getMediaFile } from "$lib/server";
+import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = async ({ url, request }) => {
-    const file = url.searchParams.get("file");
+// FIXME: Fix this junk. Uses video headers on all
+// files, which is not right
+
+export const GET: RequestHandler = async ({ url, params, request }) => {
+    const file = atob(params.slug);
     const range = request.headers.get("range");
 
     const [start, rangeEnd] = range ? range.replace("bytes=", "").split("-").map((v) => parseInt(v, 10)) as number[] : [0,0]

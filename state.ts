@@ -1,33 +1,27 @@
-import { ee } from ".";
-
-export class State {
+class State {
     private state: "idle" | "watch" = "idle";
     private video: string | null = null;
     private time: number = 0;
-    private isPaused: boolean = false;
+    private isPaused: boolean = true;
 
     constructor() {
         this.counter();
     }
 
-    setState(s: "idle" | "watch", session: string) {
+    setState(s: "idle" | "watch") {
         this.state = s;
-        ee.emit(session, "state");
     }
 
-    setVideo(v: string | null, session: string) {
+    setVideo(v: string | null) {
         this.video = v;
-        ee.emit(session, "video");
     }
 
-    setTime(t: number, session: string) {
+    setTime(t: number) {
         this.time = t;
-        ee.emit(session, "time");
     }
 
-    setPause(isPaused: boolean, session: string) {
+    setPause(isPaused: boolean) {
         this.isPaused = isPaused;
-        ee.emit(session, "pause");
     }
 
     get() {
@@ -50,4 +44,6 @@ export class State {
 
         await this.counter();
     }
-}
+};
+
+export const state = new State();
