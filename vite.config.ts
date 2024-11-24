@@ -1,14 +1,25 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig, type PluginOption, type ViteDevServer } from 'vite';
-import { socketServer } from './socket';
+import { defineConfig, type PluginOption } from 'vite';
 
-const webSocketServer: PluginOption = {
-	name: "webSocketServer",
-	configureServer(server: ViteDevServer) {
-		return socketServer(server)
+const endBuildPlugin: PluginOption = {
+	name: 'endBuildPlugin',
+	closeBundle() {
+		console.log('Bundle closed');
+		process.exit(0);
 	}
-}
+};
 
 export default defineConfig({
-	plugins: [webSocketServer, sveltekit()],
+	plugins: [endBuildPlugin, sveltekit()],
+	build: {
+		modulePreload: true
+	},
+	server: {
+		proxy: {
+			'/socket.io': {
+				target: 'http://localhost:1488',
+				ws: true
+			}
+		}
+	}
 });

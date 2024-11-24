@@ -2,29 +2,27 @@
 	import { onMount } from 'svelte';
 	import Video from './Video.svelte';
 	import { fade, scale } from 'svelte/transition';
-	import { getTrackLinks,  type Videos } from '$lib';
+	import { getTrackLinks, type Videos } from '$lib';
 	import { socket } from '$lib/socket';
 	import { localState, type State } from '$lib/state';
 
 	let s = $state(localState.get());
-	
+
 	let videos: Videos = $state({});
-    
-    let tracks = $derived(
-        getTrackLinks(videos[s.video as string])
-    )
-    
+
+	let tracks = $derived(getTrackLinks(videos[s.video as string]));
+
 	async function getMedia() {
-		videos = await (await fetch("/api/media")).json();
+		videos = await (await fetch('/api/media')).json();
 	}
 
-    async function setMediaVideo(v: string) {
-        const res = await fetch(`/api/set/${v}`);
+	async function setMediaVideo(v: string) {
+		const res = await fetch(`/api/set/${v}`);
 
-        if (res.status === 200) {
-            localState.setVideo(v)
-        }
-    }
+		if (res.status === 200) {
+			localState.setVideo(v);
+		}
+	}
 
 	onMount(async () => {
 		await getMedia();
@@ -64,9 +62,13 @@
 				{/each}
 			</div>
 		</div>
-		<button class="main" transition:fade onclick={() => localState.setState("idle")}>End the session</button>
+		<button class="main" transition:fade onclick={() => localState.setState('idle')}
+			>End the session</button
+		>
 	{:else}
-		<button class="main" transition:fade onclick={() => localState.setState("watch")}>Start the session</button>
+		<button class="main" transition:fade onclick={() => localState.setState('watch')}
+			>Start the session</button
+		>
 	{/if}
 </div>
 
