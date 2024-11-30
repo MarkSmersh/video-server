@@ -1,10 +1,12 @@
 import { Server } from 'socket.io';
-import { state } from './state';
+import { ClientState, state } from './state';
 import http2 from 'http2';
-import https from "https";
-import http from "http";
+import https from 'https';
+import http from 'http';
 
-export function webSocketServer(httpServer: http.Server | https.Server | http2.Http2SecureServer | http2.Http2Server) {
+export function webSocketServer(
+	httpServer: http.Server | https.Server | http2.Http2SecureServer | http2.Http2Server
+) {
 	const io = new Server(httpServer);
 
 	io.on('connection', (socket) => {
@@ -15,9 +17,14 @@ export function webSocketServer(httpServer: http.Server | https.Server | http2.H
 				state.setState(e.state);
 			}
 
-			if (e.video) {
+			if (e.movie !== undefined) {
+				state.setMovie(e.movie);
+				state.setChapter(null);
+			}
+
+			if (e.chapter !== undefined) {
 				state.setTime(0);
-				state.setVideo(e.video);
+				state.setChapter(e.chapter);
 			}
 
 			if (e.time) {
@@ -39,11 +46,4 @@ export function webSocketServer(httpServer: http.Server | https.Server | http2.H
 			io.emit('server:update', state.get());
 		});
 	});
-}
-
-interface ClientState {
-	state?: 'idle' | 'watch';
-	video?: string | null;
-	time?: number;
-	isPaused?: boolean;
 }

@@ -1,6 +1,7 @@
 class State {
 	private state: 'idle' | 'watch' = 'idle';
-	private video: string | null = null;
+	private movie: string | null = null;
+	private chapter: string | null = null;
 	private time: number = 0;
 	private isPaused: boolean = true;
 
@@ -12,8 +13,13 @@ class State {
 		this.state = s;
 	}
 
-	setVideo(v: string | null) {
-		this.video = v;
+	setMovie(m: string | null) {
+		this.movie = m;
+		this.chapter = null;
+	}
+
+	setChapter(c: string | null) {
+		this.chapter = c;
 	}
 
 	setTime(t: number) {
@@ -27,7 +33,8 @@ class State {
 	get() {
 		return {
 			state: this.state,
-			video: this.video,
+			movie: this.movie,
+			chapter: this.chapter,
 			time: this.time,
 			isPaused: this.isPaused
 		};
@@ -48,7 +55,8 @@ class State {
 
 export interface ClientState {
 	state?: 'idle' | 'watch';
-	video?: string | null;
+	movie?: string | null;
+	chapter?: string | null;
 	time?: number;
 	isPaused?: boolean;
 }

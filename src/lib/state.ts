@@ -2,14 +2,16 @@ import { sendUpdate } from './socket';
 
 export interface State {
 	state: 'idle' | 'watch';
-	video: string | null;
+	movie: string | null;
+	chapter: string | null;
 	time: number;
 	isPaused: boolean;
 }
 
 class LocalState {
 	private state: 'idle' | 'watch' = 'idle';
-	private video: string | null = null;
+	private movie: string | null = null;
+	private chapter: string | null = null;
 	private time: number = 0;
 	private isPaused: boolean = true;
 
@@ -18,9 +20,14 @@ class LocalState {
 		sendUpdate({ state: s });
 	}
 
-	setVideo(v: string | null) {
-		this.video = v;
-		sendUpdate({ video: v });
+	setMovie(m: string | null) {
+		this.movie = m;
+		sendUpdate({ movie: m });
+	}
+
+	setChapter(c: string | null) {
+		this.chapter = c;
+		sendUpdate({ chapter: c });
 	}
 
 	setTime(t: number) {
@@ -36,7 +43,8 @@ class LocalState {
 	get() {
 		return {
 			state: this.state,
-			video: this.video,
+			movie: this.movie,
+			chapter: this.chapter,
 			time: this.time,
 			isPaused: this.isPaused
 		};

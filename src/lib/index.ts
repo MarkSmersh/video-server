@@ -1,37 +1,46 @@
-export type Videos = Record<
-	string,
-	Array<{
-		src: string;
-		type: 'video' | 'captions';
-	}>
->;
+// export type Videos = Record<
+// 	string,
+// 	Array<{
+// 		src: string;
+// 		type: 'video' | 'captions';
+// 	}>
+// >;
+
+export interface Track {
+	name: string;
+	type: 'video' | 'captions';
+}
 
 // FIXME: Base64 slug can be buggy
 
-export async function getMediaFile(base64: string) {
-	const res = await fetch(`/api/media/${base64}`);
+export async function getMediaFile(path: string) {
+	const res = await fetch(`${path}`);
 	return res;
 }
 
-export function getTrackLinks(video: Videos[keyof Videos] | null): Tracks {
-	const tracks: Tracks = { video: [], captions: [] };
+export function getTrackLinks(
+	movie: string | null,
+	chapter: string | null,
+	media: Array<Track>
+): SortedTracks {
+	const tracks: SortedTracks = { video: [], captions: [] };
 
-	if (!video) return tracks;
+	if (!media || !movie || !chapter) return tracks;
 
-	video.forEach((v) => {
+	media.forEach((v) => {
 		if (v.type === 'video') {
-			tracks.video.push('/api/media/' + btoa(v.src));
+			tracks.video.push(`/api/media/${movie}/${chapter}/${v.name}`);
 		}
 
 		if (v.type === 'captions') {
-			tracks.captions.push('/api/media/' + btoa(v.src));
+			tracks.captions.push(`/api/media/${movie}/${chapter}/${v.name}`);
 		}
 	});
 
 	return tracks;
 }
 
-interface Tracks {
+export interface SortedTracks {
 	video: Array<string>;
 	captions: Array<string>;
 }

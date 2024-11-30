@@ -1,16 +1,10 @@
 import { io } from 'socket.io-client';
-
-interface ClientState {
-	state?: 'idle' | 'watch';
-	video?: string | null;
-	time?: number;
-	isPaused?: boolean;
-}
+import type { State } from './state';
 
 export const socket = io({
 	autoConnect: true
 });
 
-export function sendUpdate(s: ClientState) {
+export function sendUpdate(s: Partial<State>) {
 	socket.emit('client:update', s);
 }
