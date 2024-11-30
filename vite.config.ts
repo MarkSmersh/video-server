@@ -1,16 +1,8 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig, type PluginOption } from 'vite';
-
-const endBuildPlugin: PluginOption = {
-	name: 'endBuildPlugin',
-	closeBundle() {
-		console.log('Bundle closed');
-		process.exit(0);
-	}
-};
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [endBuildPlugin, sveltekit()],
+	plugins: [sveltekit()],
 	build: {
 		modulePreload: true
 	},

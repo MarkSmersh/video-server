@@ -1,6 +1,8 @@
-FROM node:latest
+FROM node:20
 
-COPY . /
+COPY --chown=app:app . /app
+
+WORKDIR /app
 
 RUN ["npm", "i"]
 
