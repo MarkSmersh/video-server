@@ -54,10 +54,9 @@
 
 <style>
 	.player {
-		background-color: violet;
+		background-color: var(--secondary);
 		border-radius: 16px;
-		width: fit-content;
-		/* width: 100%; */
+		width: calc(75% - 32px);
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -68,14 +67,21 @@
 	}
 
 	.dummy {
-		height: 100%;
-		background-color: #222222;
+		background-color: var(--primary);
 		width: 100%;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		border-radius: 16px;
-		height: 200px;
-		width: calc(200px / 9 * 16);
+		min-height: 200px;
+		height: 100%;
+		/* width: calc(200px / 9 * 16); */
+	}
+
+	@media only screen and (max-width: 600px) {
+		.player {
+			width: calc(100% - 32px);
+			flex-direction: column;
+		}
 	}
 </style>

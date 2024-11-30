@@ -45,7 +45,12 @@
 <div class="media">
 	{#if movie && chapters}
 		<div class="chapters">
-			<button onclick={() => updateMovie(null)}>Return to Movie</button>
+			<div class="header">
+				<p class="title">{movie}</p>
+				<button class="return" onclick={() => updateMovie(null)}>Movies</button>
+				/
+				<button class="return" onclick={() => updateChapter(null)}>Chapters</button>
+			</div>
 			{#each chapters as c}
 				<button
 					class={`chapter ${c.isActive ? 'active' : ''}`}
@@ -56,9 +61,14 @@
 			{/each}
 		</div>
 	{:else}
-		{#each movies as m}
-			<button class="chapter" onclick={() => updateMovie(m)}>{m}</button>
-		{/each}
+		<div class="header">
+			<button class="return" onclick={() => updateMovie(null)}>Movies</button>
+		</div>
+		<div class="movies">
+			{#each movies as m}
+				<button class="chapter" onclick={() => updateMovie(m)}>{m}</button>
+			{/each}
+		</div>
 	{/if}
 </div>
 
@@ -66,10 +76,33 @@
 	.media {
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
-		width: 50%;
+		width: 100%;
 		max-height: 100%;
+	}
+
+	.title {
+		font-weight: 600;
+	}
+
+	.return {
+		background-color: transparent;
+		cursor: pointer;
+		color: var(--primary-text);
+		font-size: 1em;
+	}
+
+	.return:hover {
+		text-decoration: underline;
+	}
+
+	.movies,
+	.chapters {
+		display: flex;
+		flex-direction: column;
+		width: calc(100% - 16px);
+		gap: 8px;
 		overflow-y: scroll;
+		padding: 0px 16px 0px 0px;
 	}
 
 	.chapter {
@@ -79,7 +112,7 @@
 		border-radius: 8px;
 		cursor: pointer;
 		font-weight: 600;
-		background-color: #222222;
+		background-color: var(--primary);
 		color: white;
 		text-wrap-mode: wrap;
 		text-overflow: ellipsis;
@@ -90,7 +123,7 @@
 	}
 
 	.active {
-		border: 3px solid darkviolet;
+		box-shadow: 0px 0px 8px var(--primary-text);
 	}
 
 	/* width */
@@ -101,17 +134,13 @@
 
 	/* Track */
 	::-webkit-scrollbar-track {
-		background: #f1f1f1;
+		background: var(--secondary);
 		border-radius: 8px;
 	}
 
 	/* Handle */
 	::-webkit-scrollbar-thumb {
-		background: #888;
-	}
-
-	/* Handle on hover */
-	::-webkit-scrollbar-thumb:hover {
-		background: #555;
+		background: var(--primary);
+		border-radius: 8px;
 	}
 </style>

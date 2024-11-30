@@ -29,7 +29,7 @@
 	let isSeeking = $state(false);
 </script>
 
-<div class="video-wrapper">
+<div class="video">
 	<!-- svelte-ignore a11y_media_has_caption -->
 	<video
 		id="player"
@@ -54,18 +54,20 @@
 </div>
 
 <style>
-	.video-wrapper {
-		/* background-color: blueviolet; */
+	.video {
 		border-radius: 16px;
 		overflow: hidden;
+		width: 100%;
 		height: 100%;
+		box-shadow: 0px 0px 10px var(--primary-text);
+		display: flex;
+		flex-basis: 150%;
 	}
 
 	#player {
-		overflow: hidden;
-		box-shadow: 1px;
 		width: 100%;
-		/* max-height: 50vh; */
 		color: brown;
+		background-color: black;
+		flex: 1;
 	}
 </style>
