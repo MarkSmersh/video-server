@@ -11,6 +11,10 @@ class State {
 
 	setState(s: 'idle' | 'watch') {
 		this.state = s;
+		this.movie = null;
+		this.chapter = null;
+		this.time = 0;
+		this.isPaused = true;
 	}
 
 	setMovie(m: string | null) {

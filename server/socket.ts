@@ -3,14 +3,19 @@ import { ClientState, state } from './state';
 import http2 from 'http2';
 import https from 'https';
 import http from 'http';
+import { users } from './users';
 
 export function webSocketServer(
 	httpServer: http.Server | https.Server | http2.Http2SecureServer | http2.Http2Server
 ) {
 	const io = new Server(httpServer);
 
-	io.on('connection', (socket) => {
+	io.on('connect', (socket) => {
+		users.add(socket.id);
+
 		socket.emit('server:connect', state.get());
+
+		io.emit('server:users', users.get());
 
 		socket.on('client:update', async (e: ClientState) => {
 			if (e.state) {
@@ -44,6 +49,17 @@ export function webSocketServer(
 			});
 
 			io.emit('server:update', state.get());
+			io.emit('server:activity', socket.id);
 		});
+
+		socket.on('client:users', () => {
+			socket.emit("server:users", users.get())
+		})
+
+		socket.on("disconnect", () => {
+			users.remove(socket.id);
+
+			socket.broadcast.emit("server:users", users.get())
+		})
 	});
 }

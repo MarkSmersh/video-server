@@ -3,14 +3,17 @@
 	import { socket } from '$lib/socket';
 	import { localState, type State } from '$lib/state';
 	import Player from './Player.svelte';
+	import Users from './Users.svelte';
 
 	let s = $state(localState.get());
 
 	socket.on('server:connect', (e: State) => {
 		s = e;
+		socket.emit("client:users");
 	});
 
 	socket.on('server:update', (e: State) => {
+		socket.emit("client:users");
 		s = e;
 	});
 </script>
@@ -19,6 +22,7 @@
 	<h1>Video Player Server</h1>
 	{#if s.state === 'watch'}
 		<Player {s} />
+		<Users />
 		<button class="main" transition:fade onclick={() => localState.setState('idle')}
 			>End the session</button
 		>
@@ -44,50 +48,10 @@
 		gap: 24px;
 	}
 
-	.chapters {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		width: 50%;
-		max-height: 100%;
-		overflow-y: scroll;
-	}
-
 	.main {
 		padding: 8px;
 		border-radius: 8px;
 		cursor: pointer;
 		font-weight: 600;
-	}
-
-	.chapter {
-		text-align: left;
-		width: calc(100% - 16px);
-		padding: 8px 8px;
-		border-radius: 8px;
-		cursor: pointer;
-		font-weight: 600;
-		background-color: #222222;
-		color: white;
-		text-wrap-mode: wrap;
-		text-overflow: ellipsis;
-		text-wrap: nowrap;
-		overflow: hidden;
-		min-height: fit-content;
-	}
-
-	@media only screen and (max-width: 600px) {
-		.root {
-			height: fit-content;
-		}
-
-		.player-wrapper {
-			flex-direction: column;
-			width: calc(100% - 64px);
-		}
-
-		.chapters {
-			width: 100%;
-		}
 	}
 </style>
