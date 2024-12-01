@@ -81,7 +81,7 @@
 		text-align: center;
 		align-content: center;
 		min-width: 100px;
-        flex-grow: 1;
+		flex-grow: 1;
 	}
 
 	.self {
@@ -94,7 +94,7 @@
 
 	@media only screen and (max-width: 600px) {
 		.users {
-            width: 100%;
-        }
+			width: 100%;
+		}
 	}
 </style>

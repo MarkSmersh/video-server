@@ -1,31 +1,31 @@
-import { randomEmoji, randomName } from "./generators";
+import { randomEmoji, randomName } from './generators';
 
 class Users {
-    private users: User[] = [];
+	private users: User[] = [];
 
-    add(id: string) {
-        this.users.push({
-            id: id,
-            name: this.generataName()
-        });
-    }
+	add(id: string) {
+		this.users.push({
+			id: id,
+			name: this.generataName()
+		});
+	}
 
-    generataName(): string {
-        return randomEmoji() + " " + randomName();
-    }
+	generataName(): string {
+		return randomEmoji() + ' ' + randomName();
+	}
 
-    remove(id: string) {
-        this.users = this.users.filter((u) => u.id !== id);
-    }
+	remove(id: string) {
+		this.users = this.users.filter((u) => u.id !== id);
+	}
 
-    get() {
-        return this.users;
-    }
+	get() {
+		return this.users;
+	}
 }
 
-export const users = new Users()
+export const users = new Users();
 
 interface User {
-    name: string,
-    id: string,
+	name: string;
+	id: string;
 }

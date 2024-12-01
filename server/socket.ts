@@ -53,13 +53,13 @@ export function webSocketServer(
 		});
 
 		socket.on('client:users', () => {
-			socket.emit("server:users", users.get())
-		})
+			socket.emit('server:users', users.get());
+		});
 
-		socket.on("disconnect", () => {
+		socket.on('disconnect', () => {
 			users.remove(socket.id);
 
-			socket.broadcast.emit("server:users", users.get())
-		})
+			socket.broadcast.emit('server:users', users.get());
+		});
 	});
 }

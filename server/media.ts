@@ -33,7 +33,6 @@ export function getMedia(movie: string, chapter: string) {
 
 	fs.readdirSync(`${MEDIA_SRC}/${movie}/${chapter}`).forEach((file) => {
 		const [, ext] = file.split('.');
-		const fileDest = `${movie}/${chapter}/${file}`;
 
 		if (VIDEO_EXT.includes(ext)) {
 			files.push({
