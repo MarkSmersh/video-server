@@ -6,7 +6,7 @@ import path from 'path';
 const app = express();
 const r = express.Router();
 
-const PORT = 1488;
+const PORT = process.env.PORT || 1488;
 
 if (process.env.NODE_ENV == 'production') {
 	import('./build/handler').then((h) => {
@@ -26,7 +26,7 @@ r.get('/media/:movie?/:chapter?/:file?', (req, res) => {
 		}
 
 		const absolutePath = path.resolve(import.meta.dirname + mediaPath);
-		res.sendFile(absolutePath);
+		res.sendFile(absolutePath, { cacheControl: true, acceptRanges: true });
 		return;
 	}
 
