@@ -100,7 +100,25 @@ export function randomName(): string {
 		'Hakari Enjoyer',
 		'Joe Byeden',
 		'dr hab. Mariusz Śniadkowski',
-		'A Golf Builder'
+		'A Golf Builder',
+        'Joseph Stoolin',
+        'Vladimir the Mushroom',
+        'Asuka Langley Sohryu',
+        'Ayanami Rei',
+        'Rostyslav Chelinski',
+        'Tsvetkova Tatyana',
+        'Jebal nie Jebal',
+        'Hui Sos Null',
+        'Yana Zist',
+        'ZeV Null',
+        'Ape',
+        'De Tichu Rok',
+        'Lobo Vasvastik',
+        'SOS All',
+        'IIiiIiiIIiiIiiIiiiii',
+        'Blackflash Po Wumanu',
+        'Ova Lati On',
+        '.2 secs',
 	];
 
 	return names[Math.floor(Math.random() * names.length)];
