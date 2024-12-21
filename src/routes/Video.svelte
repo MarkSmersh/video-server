@@ -31,6 +31,20 @@
 
 <div class="video">
 	<!-- svelte-ignore a11y_media_has_caption -->
+	<!--
+		01.12.2024
+		Be aware, that many devices will not support some
+		of the video codecs, e.x. the HEVC (H.256) doesn't
+		supported by many Android devices, especially that uses
+		deprecated browser engine or browser by themselves.
+		I leave here some links, where you can check if
+		the current video format supported by browsers:
+		https://caniuse.com/mpeg4
+		https://caniuse.com/hevc
+		Of course, this could be change in the future, so keep eye
+		on it and don't make same errors as I did.
+
+	-->
 	<video
 		id="player"
 		bind:this={player}
@@ -43,10 +57,12 @@
 		onseeked={() => (isSeeking = false)}
 		controls
 		src={videos[0]}
+		preload="metadata"
 	>
 		{#each videos as v}
 			<source src={v} type="video/mp4" />
 		{/each}
+		Your browser does not support the video tag.
 		{#each captions as c}
 			<track kind="captions" src={c} />
 		{/each}
