@@ -50,7 +50,6 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		width: 100vw;
 		min-height: 100%;
 		color: var(--primary-text);
 		font-family: 'Roboto', serif;
