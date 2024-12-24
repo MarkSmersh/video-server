@@ -94,8 +94,11 @@
 	}
 
 	@media only screen and (max-width: 600px) {
+		.player-bg {
+			width: calc(100% - 8px);
+		}
+
 		.player {
-			width: calc(100% - 32px);
 			flex-direction: column;
 		}
 	}
