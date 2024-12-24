@@ -123,7 +123,7 @@
 	}
 
 	.active {
-		box-shadow: 0px 0px 8px var(--primary-text);
+		border: 2px solid var(--primary-text);
 	}
 
 	/* width */

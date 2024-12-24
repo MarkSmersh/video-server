@@ -30,33 +30,48 @@
 	});
 </script>
 
-<div class="player" transition:scale>
-	{#if s.chapter !== null}
-		<Video
-			updatePause={async (p) => localState.setPause(p)}
-			updateTime={async (t) => localState.setTime(t)}
-			videos={tracks.video}
-			captions={tracks.captions}
-			time={s.time}
-			isPause={s.isPaused}
-		/>
-	{:else}
-		<div class="dummy">Video is not chosen</div>
-	{/if}
+<div class="player-bg">
+	<div class="player" transition:scale>
+		{#if s.chapter !== null}
+			<Video
+				updatePause={async (p) => localState.setPause(p)}
+				updateTime={async (t) => localState.setTime(t)}
+				videos={tracks.video}
+				captions={tracks.captions}
+				time={s.time}
+				isPause={s.isPaused}
+			/>
+		{:else}
+			<div class="dummy">Video is not chosen</div>
+		{/if}
 
-	<Media
-		movie={s.movie}
-		chapter={s.chapter}
-		updateChapter={(c) => localState.setChapter(c)}
-		updateMovie={(m) => localState.setMovie(m)}
-	/>
+		<Media
+			movie={s.movie}
+			chapter={s.chapter}
+			updateChapter={(c) => localState.setChapter(c)}
+			updateMovie={(m) => localState.setMovie(m)}
+		/>
+	</div>
 </div>
 
 <style>
+	.player-bg {
+		background: linear-gradient(
+			45deg,
+			rgba(44, 255, 0, 1) 0%,
+			rgba(0, 0, 0, 0) 50%,
+			rgba(255, 0, 0, 1) 100%
+		);
+		display: flex;
+		width: calc(75% - 8px);
+		padding: 4px;
+		border-radius: 16px;
+	}
+
 	.player {
 		background-color: var(--secondary);
 		border-radius: 16px;
-		width: calc(75% - 32px);
+		width: calc(100% - 32px);
 		display: flex;
 		justify-content: center;
 		align-items: center;

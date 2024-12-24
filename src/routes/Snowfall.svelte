@@ -34,11 +34,12 @@
 	function stepSnowflakes(ctx: CanvasRenderingContext2D) {
 		ctx.clearRect(0, 0, winWidth, winHeight);
 
-		if (snowflakes.length <= 800 && framesPassed / fps > 0.05) {
-			framesPassed = 0;
+		lastSnowflake += timeDiff;
 
+		if (snowflakes.length <= 500 && lastSnowflake >= 1000 / snowPerSec) {
 			let newSnowflake = drawSnowflake(ctx);
 
+			lastSnowflake = 0;
 			snowflakes.push(newSnowflake);
 		}
 
@@ -47,7 +48,7 @@
 		for (let i = 0; i < snowflakes.length; i++) {
 			let s = snowflakes[i];
 
-			let newY = s.y + s.r * 0.1;
+			let newY = s.y + s.r * timeDiff * 0.01;
 
 			if (s.y < winHeight + 10) {
 				updatedSnowflakes.push({ x: s.x, y: newY, r: s.r, a: s.a });
@@ -65,19 +66,22 @@
 
 	let lastAt: number = $state(0);
 	let fps: number = $state(0);
-	let framesPassed = $state(0);
+	let timeDiff: number = $state(0);
+	let lastSnowflake: number = $state(0);
 
 	let winHeight: number = $state(document.documentElement.clientHeight);
 	let winWidth: number = $state(document.documentElement.clientWidth);
+
+	let snowPerSec: number = $state(5);
 
 	function frame() {
 		if (canvas) {
 			let ctx = canvas.getContext('2d');
 
 			if (ctx) {
-				fps = 1000 / (Date.now() - lastAt);
+				timeDiff = Date.now() - lastAt;
+				fps = 1000 / timeDiff;
 				lastAt = Date.now();
-				framesPassed++;
 
 				stepSnowflakes(ctx);
 			}
@@ -98,24 +102,41 @@
 		winWidth = document.documentElement.clientWidth;
 	});
 
-	$inspect(snowflakes);
+	$inspect(snowPerSec);
 </script>
 
-<div class="data">
-	<h2>
-		FPS: {fps}
-	</h2>
-	<h2>
-		Snowflakes: {snowflakes.length}
-	</h2>
+<!-- TODO: -->
+<!-- It's better to have dedicated Menu'-->
+
+<div class="menu">
+	<button onclick={() => (snowPerSec = 0)}>0❆</button>
+	<button onclick={() => (snowPerSec = 5)}>5❆</button>
+	<button onclick={() => (snowPerSec = 25)}>25❆</button>
 </div>
-<canvas width={winWidth} height={winHeight} id="snowfall" bind:this={canvas}> 123 </canvas>
+<canvas width={winWidth} height={winHeight} id="snowfall" bind:this={canvas}>123</canvas>
 
 <style>
-	.data {
+	.menu {
 		position: absolute;
-		bottom: 0;
-		display: none;
+		z-index: 20;
+		display: flex;
+		padding: 8px;
+		background: var(--secondary);
+		border-radius: 8px;
+		top: 16px;
+		left: 50%;
+		align-content: center;
+		margin: auto;
+		gap: 8px;
+		translate: -50%;
+
+		button {
+			padding: 4px 8px;
+			background: var(--primary);
+			border-radius: 8px;
+			color: var(--primary-text);
+			cursor: pointer;
+		}
 	}
 
 	#snowfall {
