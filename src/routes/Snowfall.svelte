@@ -64,10 +64,11 @@
 	let snowflakes: Snowflake[] = $state([]);
 
 	let lastAt: number = $state(0);
-
 	let fps: number = $state(0);
-
 	let framesPassed = $state(0);
+
+	let winHeight: number = $state(window.innerHeight);
+	let winWidth: number = $state(window.innerWidth);
 
 	function frame() {
 		if (canvas) {
@@ -87,11 +88,14 @@
 
 	requestAnimationFrame(frame);
 
+	window.addEventListener('resize', () => {
+		winHeight = window.innerHeight;
+		winWidth = window.innerWidth;
+	});
+
 	$inspect(snowflakes);
 </script>
 
-<!-- TODO: width and height of canvas should be updated
-with window's height and width responsively -->
 <div class="data">
 	<h2>
 		FPS: {fps}
@@ -100,15 +104,13 @@ with window's height and width responsively -->
 		Snowflakes: {snowflakes.length}
 	</h2>
 </div>
-<canvas width={window.innerWidth} height={window.innerHeight} id="snowfall" bind:this={canvas}>
-	123
-</canvas>
+<canvas width={winWidth} height={winHeight} id="snowfall" bind:this={canvas}> 123 </canvas>
 
 <style>
 	.data {
 		position: absolute;
 		bottom: 0;
-		display: none;
+		/* display: none; */
 	}
 
 	#snowfall {
