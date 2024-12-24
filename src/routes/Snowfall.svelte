@@ -15,7 +15,7 @@
 	): Snowflake {
 		let radius = r || Math.floor(Math.random() * 5 + 2);
 
-		let posX = x || Math.floor(Math.random() * (1920 - radius));
+		let posX = x || Math.floor(Math.random() * (winWidth - radius));
 		let posY = y || -radius;
 
 		let alpha = a || Math.random() + 0.5;
@@ -32,7 +32,7 @@
 	}
 
 	function stepSnowflakes(ctx: CanvasRenderingContext2D) {
-		ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+		ctx.clearRect(0, 0, winWidth, winHeight);
 
 		if (snowflakes.length <= 800 && framesPassed / fps > 0.05) {
 			framesPassed = 0;
@@ -49,7 +49,7 @@
 
 			let newY = s.y + s.r * 0.1;
 
-			if (s.y < window.innerHeight + 10) {
+			if (s.y < winHeight + 10) {
 				updatedSnowflakes.push({ x: s.x, y: newY, r: s.r, a: s.a });
 			}
 
@@ -67,8 +67,8 @@
 	let fps: number = $state(0);
 	let framesPassed = $state(0);
 
-	let winHeight: number = $state(window.innerHeight);
-	let winWidth: number = $state(window.innerWidth);
+	let winHeight: number = $state(document.documentElement.scrollHeight);
+	let winWidth: number = $state(document.documentElement.scrollWidth);
 
 	function frame() {
 		if (canvas) {
@@ -89,8 +89,13 @@
 	requestAnimationFrame(frame);
 
 	window.addEventListener('resize', () => {
-		winHeight = window.innerHeight;
-		winWidth = window.innerWidth;
+		winHeight = document.documentElement.scrollHeight;
+		winWidth = document.documentElement.scrollWidth;
+	});
+
+	window.addEventListener('scrollend', () => {
+		winHeight = document.documentElement.scrollHeight;
+		winWidth = document.documentElement.scrollWidth;
 	});
 
 	$inspect(snowflakes);
@@ -115,8 +120,6 @@
 
 	#snowfall {
 		position: absolute;
-		width: 100%;
-		height: 100%;
 		z-index: 0;
 	}
 </style>
