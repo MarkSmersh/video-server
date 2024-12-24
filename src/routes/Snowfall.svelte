@@ -67,8 +67,8 @@
 	let fps: number = $state(0);
 	let framesPassed = $state(0);
 
-	let winHeight: number = $state(document.documentElement.scrollHeight);
-	let winWidth: number = $state(document.documentElement.scrollWidth);
+	let winHeight: number = $state(document.documentElement.clientHeight);
+	let winWidth: number = $state(document.documentElement.clientWidth);
 
 	function frame() {
 		if (canvas) {
@@ -89,13 +89,13 @@
 	requestAnimationFrame(frame);
 
 	window.addEventListener('resize', () => {
-		winHeight = document.documentElement.scrollHeight;
-		winWidth = document.documentElement.scrollWidth;
+		winHeight = document.documentElement.clientHeight;
+		winWidth = document.documentElement.clientWidth;
 	});
 
-	window.addEventListener('scrollend', () => {
+	window.addEventListener('scroll', () => {
 		winHeight = document.documentElement.scrollHeight;
-		winWidth = document.documentElement.scrollWidth;
+		winWidth = document.documentElement.clientWidth;
 	});
 
 	$inspect(snowflakes);
