@@ -115,11 +115,12 @@
 	.data {
 		position: absolute;
 		bottom: 0;
-		/* display: none; */
+		display: none;
 	}
 
 	#snowfall {
 		position: absolute;
+		top: 0;
 		z-index: 0;
 	}
 </style>
